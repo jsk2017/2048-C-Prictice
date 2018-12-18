@@ -4,4 +4,4 @@ clean: *.o
 
 .PHONY:build
 build:2048.c
-	gcc -g 2048.c -o 2048
+	gcc -std=c99 -g 2048.c -o 2048
