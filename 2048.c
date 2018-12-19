@@ -17,6 +17,16 @@ int test(){
     return 0;
 }
 
+
+void printfBoard(uint8_t board[SIZE][SIZE]){
+    uint8_t x,y;
+    for(x=0;x<SIZE;x++){
+        for(y=0;y<SIZE;y++){
+            printf("%d\t",board[x][y]);
+        }
+    }
+}
+
 //这个函数没有修改！
 void getColor(uint8_t value,char *color,size_t length){
     uint8_t original[] = {8,255,1,255,2,255,3,255,4,255,5,255,6,255,7,255,9,0,10,0,11,0,12,0,13,0,14,0,255,0,255,0};
@@ -116,10 +126,6 @@ void addRandom(uint8_t board[SIZE][SIZE]){
 
 }
 
-void drawRandom(uint8_t board[SIZE][SIZE]){
-    ;
-}
-
 void initBoard(uint8_t board[SIZE][SIZE]){
     int i,j;
     for(i=0;i<SIZE;i++){
@@ -134,24 +140,114 @@ void initBoard(uint8_t board[SIZE][SIZE]){
     drawBoard(board);
     score = 0;
 }
-bool moveLeft(uint8_t board[SIZE][SIZE]){
-    printf("moveleft\n");
-    return true;
+
+//翻转
+void rotateBoard(uint8_t board[SIZE][SIZE]){
+    uint8_t x,y,tmp;
+    uint8_t n = SIZE;
+    for(x=0;x<n/2;x++){
+        for(y=x;y<n-x-1;y++){
+            tmp = board[x][y];
+            board[x][y] = board[y][n-x-1];
+            board[y][n-x-1]=board[n-x-1][n-y-1];
+            board[n-x-1][n-y-1]=board[n-y-1][x];
+            board[n-y-1][x]=tmp;
+        }
+    }
 }
 
-bool moveRight(uint8_t board[SIZE][SIZE]){
-    printf("moveright\n");
-    return true;
+uint8_t findTarget(uint8_t array[SIZE],uint8_t x,uint8_t stop){
+    uint8_t t;
+    //begin direct return
+    if(x==0){
+        return x;
+    }
+    for(t=x-1;t>=0;t--){
+        if(array[t]!=0){
+            if(array[t]!=array[x]){
+                return t+1;
+            }
+            return t;
+        }else{
+            if(t==stop) return  t;
+        }
+    }
+    return x;
+
+}
+//移动 或者 合并 move or merge
+bool slideArray(uint8_t array[SIZE]){
+    bool success = false;
+    uint8_t x,t,stop = 0;
+    for(x=0;x<SIZE;x++){
+        if(array[x]!=0){
+            //找到需要移动到的位置，以及是否需要进行合并
+            t = findTarget(array,x,stop);
+            //如果目标位置和起始位置不同进行 move or merge
+            if(t!=x){
+                //判断是否进行合并
+                if(array[t]==0){
+                    array[t]=array[x];
+                }else if(array[t]==array[x]){
+                    //increase power of two
+                    array[t]++;//2的n次幂
+                    //increast score    (uint32_t)1<<array[t] == 2**array[t]    
+                    score +=(uint32_t)1<<array[t];
+                    
+                    stop = t+1;
+                }
+                array[x]=0;
+                success = true;
+            }
+        }
+    }
+    return success;
+
 }
 
 bool moveUp(uint8_t board[SIZE][SIZE]){
-    printf("moveup\n");
-    return true;
+    uint8_t x;
+    bool success = false;
+    for(x=0;x<SIZE;x++){
+        success |= slideArray(board[x]);
+    }
+
+    // printfBoard(board);
+    return success;
+}
+
+
+bool moveLeft(uint8_t board[SIZE][SIZE]){
+    bool success;
+	rotateBoard(board);
+	success = moveUp(board);
+	rotateBoard(board);
+	rotateBoard(board);
+	rotateBoard(board);
+    // printf("moveleft\n");
+	return success;
+}
+
+bool moveRight(uint8_t board[SIZE][SIZE]){
+    bool success;
+	rotateBoard(board);
+	rotateBoard(board);
+	rotateBoard(board);
+	success = moveUp(board);
+	rotateBoard(board);
+    // printf("moveright\n");
+	return success;
 }
 
 bool moveDown(uint8_t board[SIZE][SIZE]){
-    printf("movedown\n");
-    return true;
+    // printf("movedown\n");
+    bool success;
+	rotateBoard(board);
+	rotateBoard(board);
+	success = moveUp(board);
+	rotateBoard(board);
+	rotateBoard(board);
+	return success;
 }
 
 
@@ -185,10 +281,40 @@ void setBufferedInput(bool enable){
 
 }
 
+uint8_t countEmpty(uint8_t board[SIZE][SIZE]){
+    uint8_t x,y,count=0;
+    for(x=0;x<SIZE;x++){
+        for(y=0;y<SIZE;y++){
+            if(board[x][y]==0) count++;
+        }
+    }
+    return count;
+}
 
+bool findPairDown(uint8_t board[SIZE][SIZE]){
+    bool success=false;
+    uint8_t x,y;
+    for(x=0;x<SIZE;x++){
+        for(y=0;y<SIZE-1;y++){
+            if(board[x][y]==board[x][y+1]) return true;
+        }
+    }
+
+    return success;
+}
 
 bool gameEnded(uint8_t board[SIZE][SIZE]){
-    return false;
+    bool ended = true;
+    if(countEmpty(board)>0) return false;
+
+    if(findPairDown(board)) return false;
+    rotateBoard(board);
+    if(findPairDown(board)) ended = false;
+    rotateBoard(board);
+    rotateBoard(board);
+    rotateBoard(board);
+
+    return ended;
 }
 void signal_callback_handler(int signum){
     printf("        TERMINATED          \n");
@@ -217,14 +343,6 @@ void printAuthorColorful(int color){
     printf("\n\n");
 }
 
-void printfBoard(uint8_t board[SIZE][SIZE]){
-    uint8_t x,y;
-    for(x=0;x<SIZE;x++){
-        for(y=0;y<SIZE;y++){
-            printf("%d\t",board[x][y]);
-        }
-    }
-}
 int main(int argc,char **argv){
     uint8_t board[SIZE][SIZE];
     char c;
@@ -291,7 +409,8 @@ int main(int argc,char **argv){
 
             usleep(150000);
             addRandom(board);
-            drawRandom(board);
+
+            drawBoard(board);
             if(gameEnded(board)){
                 printf("        GAME OVER       \n");
                 break;
