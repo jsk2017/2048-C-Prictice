@@ -1,7 +1,17 @@
+.PHONY:build
+build:	2048.o myheader.o author.o
+	gcc -std=c99 -g myheader.o author.o 2048.o  -o 2048
+
 .PHONY:clean
 clean: *.o
 	rm *.o
 
-.PHONY:build
-build:2048.c
-	gcc -std=c99 -g 2048.c -o 2048
+2048.o:	2048.c myheader.h
+	gcc -c 2048.c
+
+myheader.o:	myheader.c myheader.h
+	gcc -c myheader.c
+
+author.o: author.c author.h
+	gcc -c author.c
+
