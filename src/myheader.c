@@ -1,12 +1,3 @@
-// #include<stdio.h>
-// #include<stdlib.h>
-// #include<stdbool.h>
-// #include<signal.h>
-// #include<unistd.h>
-// #include<string.h>
-// #include<unistd.h>
-// #include<time.h>
-// #include<termios.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdbool.h>
@@ -285,7 +276,7 @@ void setBufferedInput(bool enable){
 
         tcsetattr(STDIN_FILENO,TCSANOW,&new);
 
-        enable = false;
+        enabled = false;
     }
 
 }
