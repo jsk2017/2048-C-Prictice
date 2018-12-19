@@ -4,7 +4,7 @@ How to build C project
 
 # Procedure
 
-![2048-demo.gif](https://github.com/jsk2017/2048-C-Prictice/blob/master/resource/2048-demo.pdf)
+![2048-demo.png](https://github.com/jsk2017/2048-C-Prictice/blob/master/resource/2048-demo.png)
 
 # Demo
 
