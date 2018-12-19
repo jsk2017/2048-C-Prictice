@@ -1,6 +1,6 @@
 .PHONY:build
 build:	2048.o myheader.o author.o
-	gcc -std=c99 -g myheader.o author.o 2048.o  -o 2048
+	gcc -std=c99 -g myheader.o author.o 2048.o  -o ../bin/2048
 
 .PHONY:clean
 clean: *.o 
