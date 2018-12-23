@@ -9,6 +9,7 @@
 
 #include"myheader.h"
 #include"author.h"
+#include"antidebug.h"
 
 void test(){
     ;
@@ -19,8 +20,7 @@ int main(int argc,char ** argv){
     uint8_t board[SIZE][SIZE];
     bool success;
     char c;
-    char input[8];
-    struct termios new;
+    char key[9];
     //Gloabl config
     if(argc == 2){
         if(strcmp(argv[1],"test")==0){
@@ -33,7 +33,7 @@ int main(int argc,char ** argv){
             scheme = 2;
         }
     }
-
+    pid_sid();//简单的反调试
     printAuthorColorful(31);
 
 
@@ -87,14 +87,19 @@ int main(int argc,char ** argv){
 
             addRandom(board);
             drawBoard(board);
-            if(gameWin(board)){
+            if(gameWin()){//check score == 2**16+..+..+.. ==131070=0x0001fffe
                 // paintWin();
                 printf("        You Win!         \n");
-                printf("Now,please input you flag:");
-                checkBoard(board);//检查是否是 1-16
+                //这里在运行时没有立即打印出信息，这是因为缓冲区没有刷新，如果有必要的话可以使用fflush
+                fflush(stdout);
+                printf("Now,please input you key:");
+                checkBoard(board);//check board 是否是 1-16
                 setBufferedInput(true);
                 printf("\033[?25h");
-                scanf("%s",input);
+
+                uint8_t keyLen = (uint8_t)getStr(key,8);
+                //correct key is aY2oPew9
+                // printf("%s",input);
                 /*
                 main_check 主要逻辑
                 根据 board 进行hex
@@ -103,8 +108,9 @@ int main(int argc,char ** argv){
 
                 最后 paint flag
                 */
-                if(main_check()){
-                    paintFlag();
+                //这里为了测试假设board和score已经符合要求
+                if(!main_check(key,board,keyLen)){
+                    paintFlag(key,keyLen);
                 };
 
                 break;

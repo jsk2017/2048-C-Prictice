@@ -52,8 +52,33 @@ uint8_t countEmpty(uint8_t board[SIZE][SIZE]);
 
 bool gameEnded(uint8_t board[SIZE][SIZE]);
 
-bool gameWin(uint8_t board[SIZE][SIZE]);
+//Check functions
+
+bool gameWin(void);
 
 bool checkBoard(uint8_t board[SIZE][SIZE]);
+
+int main_check(char *key,uint8_t board[SIZE][SIZE],uint8_t keyLen);
+
+int paintFlag(char key[],uint8_t keyLen);
+
+//Module special input
+
+int getStr(char *buffer,int maxLen);
+
+void str2hex(char *source,char *dest,int keyLen);
+
+
+//Matrix Module  矩阵运算
+
+//矩阵  转置
+int getTransposeMatrix(uint8_t * matrix,uint8_t row,uint8_t column,uint8_t ** transposeMatrix);
+
+int getTransposeMatrix_oneArray(uint8_t * matrix,uint8_t row,uint8_t column,uint8_t * transposeMatrix);
+
+//C = A*B   要求：A的列数 = B的行数  ==> C的行数 = A的行数；C的列数 = B的列数
+void matrixMul(uint8_t **A, uint8_t **B, uint32_t **C, uint8_t rowA, uint8_t columnB, uint8_t columnA);
+
+void matrixMul_oneArray(uint8_t *A, uint8_t *B, uint32_t *C, uint8_t rowA, uint8_t columnB, uint8_t columnA);
 
 #endif
