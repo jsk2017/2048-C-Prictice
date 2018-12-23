@@ -23,7 +23,7 @@ CC = cc $(CCFLAGS)
 CXX = g++ $(CXXFLAGS)
 
 executable: $(OBJECTS)
-	$(CC) -nostdlib -o $(OUTPUT) $^
+	$(CC) -o $(OUTPUT) $^
 
 #编译所有的.c 文件为 .o
 .c.o: 
